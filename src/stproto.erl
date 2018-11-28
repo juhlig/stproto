@@ -48,7 +48,10 @@ parse(command, <<VarSep, _/binary>>, VarSep, _, _, #command{command= <<>>}) ->
 %% variant separator on non-empty command -> continue with variant parsing
 parse(command, <<VarSep, More/binary>>, VarSep, ArgSep, EOL, Acc) ->
 	parse(variant, More, VarSep, ArgSep, EOL, Acc#command{variant= <<>>});
-%% command character -> continue
+%% uppercase command character -> lowercase and continue
+parse(command, <<C, More/binary>>, VarSep, ArgSep, EOL, Acc=#command{command=Cmd}) when C>=$A andalso C=<$Z ->
+	parse(command, More, VarSep, ArgSep, EOL, Acc#command{command= <<Cmd/binary, (C-$A+$a)>>});
+%% non-uppercase command character -> continue
 parse(command, <<C, More/binary>>, VarSep, ArgSep, EOL, Acc=#command{command=Cmd}) ->
 	parse(command, More, VarSep, ArgSep, EOL, Acc#command{command= <<Cmd/binary, C>>});
 %% eol after variant -> ok
@@ -57,7 +60,10 @@ parse(variant, EOL, _, _, EOL, Acc) ->
 %% argument separator after variant -> continue with variant parsing
 parse(variant, <<ArgSep, More/binary>>, VarSep, ArgSep, EOL, Acc) ->
 	parse(args, More, VarSep, ArgSep, EOL, Acc);
-%% variant character -> continue
+%% uppercase variant character -> lowercase and continue
+parse(variant, <<C, More/binary>>, VarSep, ArgSep, EOL, Acc=#command{variant=Var}) when C>=$A andalso C=<$Z ->
+	parse(variant, More, VarSep, ArgSep, EOL, Acc#command{variant= <<Var/binary, (C-$A+$a)>>});
+%% non-uppercase variant character -> continue
 parse(variant, <<C, More/binary>>, VarSep, ArgSep, EOL, Acc=#command{variant=Var}) ->
 	parse(variant, More, VarSep, ArgSep, EOL, Acc#command{variant= <<Var/binary, C>>});
 %% argument parsing -> helper function
