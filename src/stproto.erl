@@ -114,7 +114,7 @@ make_reply(Cmd, Status, Msgs) ->
 	make_reply1(Cmd, Status, Msgs).
 
 make_reply1(Cmd, Status, Msgs) ->
-	make_reply2(binary_to_upper(Cmd), Status, Msgs).
+	make_reply2(string:uppercase(Cmd), Status, Msgs).
 
 make_reply2(Cmd, ok, Msgs) ->
 	make_reply3(Cmd, <<"OK">>, Msgs);
@@ -123,7 +123,7 @@ make_reply2(Cmd, error, Msgs) ->
 	make_reply3(Cmd, <<"ERROR">>, Msgs);
 
 make_reply2(Cmd, Custom, Msgs) when is_binary(Custom) ->
-	make_reply3(Cmd, binary_to_upper(Custom), Msgs).
+	make_reply3(Cmd, string:uppercase(Custom), Msgs).
 
 make_reply3(Cmd, StatusStr, Msgs) when is_list(Msgs) ->
 	lists:reverse([<<Cmd/binary, $-, StatusStr/binary>> | [<<Cmd/binary, $+, StatusStr/binary, $:, Msg/binary>> || Msg <- Msgs]]);
@@ -133,10 +133,3 @@ make_reply3(Cmd, StatusStr, Msg) when is_binary(Msg) ->
 
 make_reply3(Cmd, StatusStr, undefined) ->
 	[<<Cmd/binary, $-, StatusStr/binary>>].
-
-
-
-
--spec binary_to_upper(binary()) -> binary().
-binary_to_upper(Str) ->
-	<< <<if C>=$a andalso C=<$z -> C-$a+$A; true -> C end>> || <<C>> <= Str >>.
