@@ -5,7 +5,7 @@
 
 -record(command, {command= <<>>, variant=undefined, args=[]}).
 
--spec parse(iodata()) -> {binary(), undefined | binary(), [binary()]} | {error, term()}.
+-spec parse(iodata()) -> {ok, {binary(), undefined | binary(), [binary()]}} | {error, term()}.
 parse(Str) when is_binary(Str) ->
 	case parse(command, Str, #command{}) of
 		{ok, #command{command=Command, variant=Variant, args=Args}} -> {ok, {Command, Variant, Args}};
