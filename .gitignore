@@ -1,0 +1,5 @@
+.erlang.mk
+.stproto.plt
+*.d
+ebin/*.beam
+logs
